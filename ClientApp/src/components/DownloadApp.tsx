@@ -46,7 +46,7 @@ export const DownloadCard: React.FC = () => {
       <Box sx={{ minWidth: 0 }}>
         <Typography sx={{ fontWeight: 600, lineHeight: 1.25 }}>Prefere usar no computador?</Typography>
         <Typography sx={{ color: tokens.muted, fontSize: "0.9rem", mb: 1.25 }}>
-          App para Windows 10 e 11 · versão {DOWNLOAD.version} · {DOWNLOAD.size}
+          App para Windows 10 e 11 · {DOWNLOAD.size}
         </Typography>
 
         <Button variant="contained" color="primary" startIcon={<FileDownloadOutlined />} {...linkProps}>
@@ -55,25 +55,34 @@ export const DownloadCard: React.FC = () => {
 
         <Box
           component="details"
-          sx={{ mt: 1.25, fontSize: "0.85rem", color: tokens.muted, "& summary": { cursor: "pointer" } }}
+          sx={{ mt: 1.25, fontSize: "0.88rem", color: tokens.muted, "& summary": { cursor: "pointer" } }}
         >
           <summary>Como instalar</summary>
-          <Box component="ul" sx={{ m: 0, mt: 0.75, pl: 2.25, display: "grid", gap: 0.5 }}>
+          <Box component="ol" sx={{ m: 0, mt: 0.75, pl: 2.5, display: "grid", gap: 0.75 }}>
             <li>
-              O Google Drive mostra um aviso porque o arquivo é grande: clique em{" "}
-              <strong>Baixar mesmo assim</strong>.
+              Clique em <strong>Baixar para Windows</strong>. Se o Google Drive pedir uma confirmação
+              por causa do tamanho do arquivo, clique em <strong>Baixar mesmo assim</strong>.
             </li>
             <li>
-              O instalador ainda não tem assinatura digital, então o Windows pode exibir o aviso do
-              SmartScreen: clique em <strong>Mais informações</strong> e depois em{" "}
+              Abra o arquivo baixado. Se o Windows perguntar se você confia nele, é só porque o app
+              ainda é novo: clique em <strong>Mais informações</strong> e depois em{" "}
               <strong>Executar assim mesmo</strong>.
             </li>
             <li>
-              Para conferir o arquivo baixado (SHA-256):
-              <Box component="code" sx={{ display: "block", mt: 0.25, wordBreak: "break-all", fontSize: "0.78rem" }}>
+              Siga as telas do instalador. No fim, o CNPJSearch fica na sua área de trabalho e no
+              menu Iniciar.
+            </li>
+          </Box>
+
+          {/* Informação técnica, para quem quiser conferir o arquivo; não atrapalha quem só quer instalar */}
+          <Box component="details" sx={{ mt: 1, fontSize: "0.8rem", "& summary": { cursor: "pointer" } }}>
+            <summary>Quer conferir o arquivo? (avançado)</summary>
+            <Box sx={{ mt: 0.5 }}>
+              Versão {DOWNLOAD.version}. Código de verificação (SHA-256):
+              <Box component="code" sx={{ display: "block", mt: 0.25, wordBreak: "break-all", fontSize: "0.76rem" }}>
                 {DOWNLOAD.sha256}
               </Box>
-            </li>
+            </Box>
           </Box>
         </Box>
       </Box>
