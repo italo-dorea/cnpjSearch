@@ -14,11 +14,14 @@ import { Search } from "@mui/icons-material";
 import { getCNPJ } from "../services/cnpj";
 import imageLogo from "../assets/searchAvatar.jpg";
 import { Footer } from "../components/Footer";
+import { DownloadCard } from "../components/DownloadApp";
 import { InfoCnpj } from "./InfoCnpj";
+import { Empresa } from "../interfaces/Empresa";
+import { tokens } from "../theme";
 
 const DashboardPage: React.FC = () => {
   const [cnpj, setCnpj] = useState<string>("");
-  const [empresa, setEmpresa] = useState<any>(null);
+  const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -47,9 +50,9 @@ const DashboardPage: React.FC = () => {
       const empresaData = await getCNPJ(unmaskedCNPJ);
       setEmpresa(empresaData);
       setError(null);
-    } catch (error: any) {
+    } catch (error) {
       setError(
-        error?.message ||
+        (error instanceof Error && error.message) ||
           "Erro ao consultar o CNPJ. Verifique o número e tente novamente."
       );
       setEmpresa(null);
@@ -67,7 +70,8 @@ const DashboardPage: React.FC = () => {
             container
             spacing={8}
             sx={{
-              minHeight: "90vh", // altura mínima para ocupar 85% da viewport
+              // ocupa a janela inteira entre a barra do topo e o rodapé fixo (sem rolagem)
+              minHeight: `calc(100vh - ${tokens.appBarHeight}px - var(--footer-h, ${tokens.footerHeight}px))`,
               display: "flex",
               alignItems: "center", // alinha verticalmente ao centro
               justifyContent: "center", // opcional: centraliza horizontalmente
@@ -85,7 +89,7 @@ const DashboardPage: React.FC = () => {
             >
               <Stack direction={"column"} spacing={5}>
                 <Typography variant="h5" sx={styles.title}>
-                  Consulte informações de uma empresa com a consulta por CNPJ !
+                  Consulte os dados de uma empresa pelo CNPJ
                 </Typography>
                 <Box
                   component="form"
@@ -95,8 +99,14 @@ const DashboardPage: React.FC = () => {
                     alignItems: "center",
                     width: "100%",
                     backgroundColor: "#fff",
-                    borderRadius: 10,
-                    border: "1px solid #000",
+                    borderRadius: "999px",
+                    border: "1.5px solid",
+                    borderColor: "secondary.main",
+                    transition: "border-color .15s, box-shadow .15s",
+                    "&:focus-within": {
+                      borderColor: "primary.main",
+                      boxShadow: "0 0 0 3px rgba(3, 109, 197, 0.18)",
+                    },
                   }}
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -106,20 +116,30 @@ const DashboardPage: React.FC = () => {
                   <InputBase
                     sx={{ ml: 1, flex: 1 }}
                     placeholder="00.000.000/0000-00"
-                    inputProps={{ "aria-label": "Pesquisar CNPJ" }}
+                    inputProps={{
+                      "aria-label": "Pesquisar CNPJ",
+                      inputMode: "numeric",
+                    }}
                     value={cnpj}
                     onChange={handleInputChange}
                     required
                   />
                   <IconButton
                     type="button"
-                    sx={{ p: "10px" }}
-                    aria-label="search"
+                    sx={{
+                      p: "10px",
+                      my: "6px",
+                      color: "#fff",
+                      backgroundColor: "primary.main",
+                      "&:hover": { backgroundColor: "primary.dark" },
+                    }}
+                    aria-label="Consultar CNPJ"
                     onClick={handleSearchClick}
                   >
                     <Search />
                   </IconButton>
                 </Box>
+                <DownloadCard />
               </Stack>
             </Grid>
             <Grid
@@ -127,7 +147,8 @@ const DashboardPage: React.FC = () => {
               xs={12}
               md={6}
               sx={{
-                display: "flex",
+                // no celular a ilustração só ocuparia espaço: o foco é a consulta
+                display: { xs: "none", sm: "flex" },
                 alignItems: "center",
                 alignContent: "center",
               }}
@@ -138,22 +159,25 @@ const DashboardPage: React.FC = () => {
               <Box sx={{ width: "50%", mt: 2 }}>
                 <LinearProgress
                   sx={{
-                    backgroundColor: "#e0e0e0",
-                    "& .MuiLinearProgress-bar": { backgroundColor: "#ff735c" },
+                    backgroundColor: tokens.blueTint,
+                    "& .MuiLinearProgress-bar": { backgroundColor: "primary.main" },
                   }}
                 />
               </Box>
             )}
             {error && (
               <Grid item xs={12}>
-                <Typography style={{ color: "red" }}>{error}</Typography>{" "}
-                {/* Exibe o erro se houver */}
+                <Typography role="alert" sx={{ color: "error.main", fontWeight: 500 }}>
+                  {error}
+                </Typography>
               </Grid>
             )}
           </Grid>
         </Container>
       )}
-      {empresa && <InfoCnpj empresa={empresa} setSearch={setEmpresa} />}
+      {empresa && (
+        <InfoCnpj empresa={empresa} onNewSearch={() => setEmpresa(null)} />
+      )}
       <Footer />
     </>
   );
@@ -165,6 +189,7 @@ const styles = {
   imageLogo: {
     width: 400,
     height: 400,
+    mixBlendMode: "multiply", // o fundo branco da imagem assume o off-white da página
   },
   title: {
     fontWeight: 600,

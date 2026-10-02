@@ -10,6 +10,9 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 
+import { tokens } from "../theme";
+import { DownloadBarButton } from "./DownloadApp";
+
 const pages = ["Página Inicial"];
 
 function ResponsiveAppBar() {
@@ -25,7 +28,11 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#ff735c" }}>
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{ backgroundColor: tokens.ink, borderBottom: `3px solid ${tokens.blue}` }}
+    >
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -75,6 +82,7 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
+          <DownloadBarButton />
         </Toolbar>
       </Container>
     </AppBar>
